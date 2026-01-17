@@ -32,10 +32,6 @@ public class FileUploadUtil {
         }
     }
 
-    /**
-     * Lưu file + tự động nén nếu là ảnh (JPEG/PNG/WEBP)
-     * Trả về URL để lưu vào DB
-     */
     public String saveFile(MultipartFile file) throws IOException {
         ensureDirectoryExists();
 
@@ -45,19 +41,26 @@ public class FileUploadUtil {
             extension = originalName.substring(originalName.lastIndexOf(".")).toLowerCase();
         }
 
-        String fileName = UUID.randomUUID() + extension;
+        String fileName = UUID.randomUUID() + (extension.isBlank() ? "" : extension);
         Path filePath = Paths.get(uploadDir, fileName);
 
+        // Chỉ nén khi thật sự đọc được ảnh
         if (isImage(file)) {
-            // Nén ảnh chất lượng cao (70-80%)
-            byte[] compressed = compressImage(file, 0.8f);
-            Files.write(filePath, compressed);
-        } else {
-            // File khác (PDF, DOC...) → lưu nguyên bản
-            Files.write(filePath, file.getBytes());
+            try {
+                byte[] compressed = compressImage(file, 0.8f);
+                if (compressed != null) {
+                    Files.write(filePath, compressed);
+                    // Vì bạn ghi JPG ở compressImage, nên nên trả về đuôi .jpg (xem mục 2)
+                    return "/uploads/" + fileName;
+                }
+            } catch (Exception ex) {
+                // fallback: lưu nguyên bản nếu decode/nén lỗi (Bogus input colorspace)
+                Files.write(filePath, file.getBytes());
+                return "/uploads/" + fileName;
+            }
         }
 
-        // Trả về URL truy cập (dùng với static resource)
+        Files.write(filePath, file.getBytes());
         return "/uploads/" + fileName;
     }
 
@@ -68,6 +71,7 @@ public class FileUploadUtil {
 
     private byte[] compressImage(MultipartFile file, float quality) throws IOException {
         BufferedImage image = ImageIO.read(file.getInputStream());
+        if (image == null) return null;
 
         // Resize nếu quá lớn (> 1920px)
         if (image.getWidth() > 1920) {

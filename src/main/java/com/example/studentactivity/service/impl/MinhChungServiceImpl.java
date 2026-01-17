@@ -60,7 +60,7 @@ public class MinhChungServiceImpl implements MinhChungService {
         try {
             fileUrl = fileUploadUtil.saveFile(file);
         } catch (IOException e) {
-            throw new BusinessException("Lỗi lưu file minh chứng");
+            throw new BusinessException("Lỗi lưu file minh chứng: " + e.getMessage());
         }
 
         MinhChung mc = new MinhChung();
