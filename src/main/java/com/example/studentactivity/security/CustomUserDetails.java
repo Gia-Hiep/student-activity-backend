@@ -12,11 +12,11 @@ import java.util.stream.Collectors;
 public class CustomUserDetails implements UserDetails {
 
     private final String mssv;
-    private final String password; // có thể null khi dùng JWT
+    private final String password;
     private final Collection<? extends GrantedAuthority> authorities;
     private final boolean enabled;
 
-    // Constructor dùng khi login bằng username/password (có SinhVien entity)
+    // Constructor dùng khi login bằng username/password
     public CustomUserDetails(SinhVien sinhVien, List<GrantedAuthority> authorities) {
         this.mssv = sinhVien.getMssv();
         this.password = sinhVien.getMatKhau();

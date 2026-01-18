@@ -26,6 +26,7 @@ public class PhanQuyenServiceImpl implements PhanQuyenService {
     private VaiTroRepository vaiTroRepository;
 
     @Override
+    @Transactional
     public PhanQuyen assignRole(
             Integer userId,
             Integer vaiTroId,
@@ -34,12 +35,17 @@ public class PhanQuyenServiceImpl implements PhanQuyenService {
             LocalDate ngayBatDau,
             LocalDate ngayKetThuc
     ) {
+        // 1) XÓA HẾT role cũ của sinh viên
+        phanQuyenRepository.deleteBySinhVienId(userId);
+
+        // 2) LẤY SV + ROLE
         SinhVien sv = sinhVienRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy sinh viên"));
 
         VaiTro role = vaiTroRepository.findById(vaiTroId)
                 .orElseThrow(() -> new RuntimeException("Không tìm thấy vai trò"));
 
+        // 3) TẠO role mới
         PhanQuyen pq = new PhanQuyen();
         pq.setSinhVien(sv);
         pq.setVaiTro(role);
@@ -50,6 +56,7 @@ public class PhanQuyenServiceImpl implements PhanQuyenService {
 
         return phanQuyenRepository.save(pq);
     }
+
 
     @Override
     @Transactional

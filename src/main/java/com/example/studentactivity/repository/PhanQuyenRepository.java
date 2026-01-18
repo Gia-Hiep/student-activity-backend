@@ -14,6 +14,7 @@ public interface PhanQuyenRepository extends JpaRepository<PhanQuyen, Integer> {
     @Query("SELECT pq FROM PhanQuyen pq WHERE pq.sinhVien.id = :sinhVienId " +
             "AND pq.ngayBatDau <= :today AND pq.ngayKetThuc >= :today")
     List<PhanQuyen> findActiveRolesBySinhVienId(Integer sinhVienId, LocalDate today);
+    void deleteBySinhVienId(Integer sinhVienId);
 
     List<PhanQuyen> findBySinhVienIdAndHocKyAndNamHoc(Integer sinhVienId, String hocKy, String namHoc);
 }

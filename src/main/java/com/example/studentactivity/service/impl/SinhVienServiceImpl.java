@@ -32,7 +32,7 @@ public class SinhVienServiceImpl implements SinhVienService {
 
     @Override
     public List<SinhVien> getByLopId(Integer lopId) {
-        // cần method này trong SinhVienRepository
-        return sinhVienRepository.findByLopId(lopId);
+        return sinhVienRepository.findByLopIdWithRoles(lopId);
     }
+
 }

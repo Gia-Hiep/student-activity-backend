@@ -23,4 +23,13 @@ public interface SinhVienRepository extends JpaRepository<SinhVien, Integer> {
             "AND pq.ngayKetThuc >= :today")
     List<PhanQuyen> findPhanQuyenBySinhVienIdAndActive(@Param("sinhVienId") Integer sinhVienId,
                                                        @Param("today") LocalDate today);
+
+    @Query("""
+  select distinct sv
+  from SinhVien sv
+  left join fetch sv.phanQuyens pq
+  left join fetch pq.vaiTro vt
+  where sv.lop.id = :lopId
+""")
+    List<SinhVien> findByLopIdWithRoles(@Param("lopId") Integer lopId);
 }

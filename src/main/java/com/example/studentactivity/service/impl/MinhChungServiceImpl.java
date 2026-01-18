@@ -24,7 +24,7 @@ public class MinhChungServiceImpl implements MinhChungService {
     @Autowired private HoatDongRepository hoatDongRepository;
     @Autowired private QuyDoiDiemRepository quyDoiDiemRepository;
     @Autowired private DiemRenLuyenRepository diemRenLuyenRepository;
-    @Autowired private FileCompressor fileCompressor; // nếu chưa dùng thì để đó cũng không sao
+    @Autowired private FileCompressor fileCompressor;
     @Autowired private FileUploadUtil fileUploadUtil;
 
     @Override
@@ -46,7 +46,6 @@ public class MinhChungServiceImpl implements MinhChungService {
             throw new BusinessException("Hoạt động chưa cấu hình thời gian, không thể nộp minh chứng");
         }
 
-        // Chỉ cho nộp khi now >= start  (đang diễn ra hoặc đã kết thúc)
         if (now.isBefore(start)) {
             throw new BusinessException("Hoạt động chưa diễn ra, chưa thể nộp minh chứng");
         }
@@ -117,7 +116,6 @@ public class MinhChungServiceImpl implements MinhChungService {
                     .findByLoaiHoatDongIdAndTieuChiId(loaiId, 1)
                     .orElseThrow(() -> new BusinessException("Không tìm thấy quy đổi điểm"));
 
-            // TODO: sau này có thể lấy học kỳ/năm học từ cấu hình hoặc từ hoạt động
             String hocKy = "HK1";
             String namHoc = "2025-2026";
 
@@ -135,8 +133,6 @@ public class MinhChungServiceImpl implements MinhChungService {
             drl.setTongDiem(drl.getTongDiem() + qd.getDiemCong());
             diemRenLuyenRepository.save(drl);
         }
-        // =============================================
-
         return minhChungRepository.save(mc);
     }
 
